@@ -1,0 +1,40 @@
+#!/bin/bash
+echo -e "Dame el usuario"
+read nombre
+
+echo "Dame el comentario"
+read comentario
+
+echo -e "lista de los grupos que hay "
+cat /etc/group
+
+echo -e "Que nombre le vas a poner al grupo"
+read grupo
+sudo groupadd $grupo
+
+echo -e "\nIngrese la ruta del directorio hogar (Por default es: /home/'nombreUsuario'\n"
+read dirHogar
+
+sudo useradd -c $comentario -d $dirHogar -m -k /etc/skel -g $grupo -s /bin/bash $nombre
+echo -n "se pondra la clave ah : "$nombre
+echo -e "la clave debe tener 8 digitos"
+STTY_SAVE=`stty -g`
+stty -echo
+read contra
+stty $STTY_SAVE
+longitud=${#contra}
+if [ $longitud = 8 ];
+then 
+	echo "cumplio la condicion "
+	echo "$nombre:$contra" | sudo chpasswd
+	else
+		echo "minimo eran 8 digitos "
+fi
+
+echo "agregar sudo a un usuario "
+
+sudo sed -i '$a '$nombre' ALL=(ALL:ALL) ALL' /etc/sudoers
+sleep 4
+echo -e "se asigno sudo "
+
+
