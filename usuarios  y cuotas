@@ -1,0 +1,84 @@
+#!/bin/bash
+echo "---------------------------------------------------------------------------------------------| "
+echo "  |      01       111010011    0101        01        01      01        01      01            | "
+echo "  |      01          01        01  01      01        01      01          01  01              | "
+echo "  |      01          01        01    01    01        01      01            01                | "
+echo "  |      01          01        01      01  01        01      01          01   01             | "
+echo "  |      010101   010101010    01        0101        0101010101        01       01           | "
+echo "---------------------------------------------------------------------------------------------| "
+
+
+sleep 2
+
+echo "Bienvenido al programa de creacion de usuarios"
+sleep 2
+
+echo "Deseas crear un usuario?"
+read respuesta1
+
+if [ $respuesta1 = si ]
+	then
+	echo "Dame el nombre del nuevo usuario"
+	read nombre_usuario
+	echo "confirmando"
+	sleep 2
+	echo "Dame el comentario del usuario"
+	read comentario_usuario
+	echo "confirmado"
+	sleep 2
+	echo "Deseas meterlo a algun grupo?"
+	read respuesta_grupo
+		if [ $respuesta_grupo = si ]
+			then
+			echo "estos son los grupos que tiene tu maquina"
+			cat /etc/group
+			echo "ingresa el nombre dle grupo que deseas agregar al usuario"
+			read respuesta_nombregrupo
+			sudo groupadd $respuesta_nombregrupo
+			
+	
+		else 
+			echo "confirmado"
+	
+		fi
+
+	echo " Ingrese la ruta del directorio hogar (Por default es: /home/'nombreUsuario'\n"
+		read directoriohogar
+
+	echo "creando el usuario"
+	sudo useradd -c $comentario_usuario -d $directoriohogar -m -k /etc/skel -g $respuesta_nombregrupo -s /bin/bash $nombre_usuario
+	echo -e "\nIngrese la contraseña del usuario"
+	echo -e "debe ser de 8 caracteres"
+	STTY_SAVE=`stty -g`
+	stty -echo
+	read contra
+	stty $STTY_SAVE
+	longitud=${#contra}
+	if [ $longitud = 10 ];
+	then 
+	echo -e "\nCumple la condicion\n"
+	echo "$nombre_usuario:$contra" | sudo chpasswd
+    else
+    echo -e "\nNo cumple la condicion\n"
+			fi
+
+	
+
+
+else
+	echo "vuelve cuando quieras"
+	echo "saliendo"
+    exit 
+     
+ fi
+echo "Deseas aplicar Quotas a un usuario"
+read respuesta2
+if [respuesta2 = si]
+then
+echo "dame el nombre del usuario"
+read nombrequotas
+
+sudo edquota -u $nombrequotas
+fi
+
+
